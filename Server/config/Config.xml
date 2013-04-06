@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <orderlist 
+    url="tcp://localhost:9000/OrderListServer/OrderList"
+    logfile="orderlog.txt" />
+  <remotestate
+    directory="RemoteState"
+    primary="master.bak"
+    temporary="temp.bak" />
+</configuration>
