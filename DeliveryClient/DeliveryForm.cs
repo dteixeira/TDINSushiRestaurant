@@ -9,8 +9,10 @@ namespace DeliveryClient
     {
         private Order _changedOrder = null;
         private OrderState _changedState;
+        private StateChangeEvent _event = null;
         private ChangeEventProxy _eventProxy = null;
         private IOrderList _list = null;
+        private string _teamName;
 
         public DeliveryForm()
         {
@@ -27,7 +29,7 @@ namespace DeliveryClient
                 Order order = FindById(Convert.ToInt64(item.SubItems[0].Text));
                 if (order != null)
                 {
-                    _list.ChangeOrderState(order.OrderID, OrderState.PREPARING);
+                    _list.ChangeOrderState(order.OrderID, OrderState.DELIVERING, _teamName);
                 }
             }
         }
@@ -40,7 +42,7 @@ namespace DeliveryClient
                 Order order = FindById(Convert.ToInt64(item.SubItems[0].Text));
                 if (order != null)
                 {
-                    _list.ChangeOrderState(order.OrderID, OrderState.WAITING_DELIVERY);
+                    _list.ChangeOrderState(order.OrderID, OrderState.CONCLUDED);
                 }
             }
         }
@@ -68,7 +70,18 @@ namespace DeliveryClient
             _list = (IOrderList)RemotingServices.Connect(typeof(IOrderList), remote.ObjectUrl);
             _eventProxy = new ChangeEventProxy();
             _eventProxy.StateChangeNotifier += new StateChangeEvent(RemoteHandle);
-            _list.StateChangeNotifier += new StateChangeEvent(_eventProxy.BindEventNotifier);
+            _event = new StateChangeEvent(_eventProxy.BindEventNotifier);
+            _list.StateChangeNotifier += _event;
+
+            // Register delivery team and change window name
+            _teamName = _list.RegisterDeliveryTeam();
+            this.Text = "Delivery Client " + _teamName;
+        }
+
+        private void DeliveryForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _list.StateChangeNotifier -= _event;
+            _list.UnregisterDeliveryTeam(_teamName);
         }
 
         private Order FindById(long id)
@@ -85,6 +98,30 @@ namespace DeliveryClient
             return order;
         }
 
+        private void HandleDelivering()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new MethodInvoker(HandleDelivering));
+            }
+            else
+            {
+                foreach (ListViewItem it in listView1.Items)
+                {
+                    if (Convert.ToInt64(it.SubItems[0].Text) == _changedOrder.OrderID)
+                    {
+                        listView1.Items.Remove(it);
+                        break;
+                    }
+                }
+                if (_changedOrder.DeliveryTeam.Equals(_teamName))
+                {
+                    ListViewItem item = new ListViewItem(new string[] { _changedOrder.OrderID.ToString(), _changedOrder.ClientName, _changedOrder.ClientAddress });
+                    listView2.Items.Add(item);
+                }
+            }
+        }
+
         private void HandleOthers()
         {
             if (InvokeRequired)
@@ -98,7 +135,6 @@ namespace DeliveryClient
                     if (Convert.ToInt64(it.SubItems[0].Text) == _changedOrder.OrderID)
                     {
                         listView1.Items.Remove(it);
-                        listView3.Items.Clear();
                         break;
                     }
                 }
@@ -107,84 +143,22 @@ namespace DeliveryClient
                     if (Convert.ToInt64(it.SubItems[0].Text) == _changedOrder.OrderID)
                     {
                         listView2.Items.Remove(it);
-                        listView4.Items.Clear();
                         break;
                     }
                 }
             }
         }
 
-        private void HandlePreparing()
+        private void HandleWaitingDelivery()
         {
             if (InvokeRequired)
             {
-                Invoke(new MethodInvoker(HandlePreparing));
+                Invoke(new MethodInvoker(HandleWaitingDelivery));
             }
             else
             {
-                foreach (ListViewItem it in listView1.Items)
-                {
-                    if (Convert.ToInt64(it.SubItems[0].Text) == _changedOrder.OrderID)
-                    {
-                        listView1.Items.Remove(it);
-                        listView3.Items.Clear();
-                        break;
-                    }
-                }
-                if (_changedState == OrderState.PREPARING)
-                {
-                    ListViewItem item = new ListViewItem(new string[] { _changedOrder.OrderID.ToString(), _changedOrder.ClientName, _changedOrder.SushiList.Count.ToString() });
-                    listView2.Items.Add(item);
-                }
-            }
-        }
-
-        private void HandleWaiting()
-        {
-            if (InvokeRequired)
-            {
-                Invoke(new MethodInvoker(HandleWaiting));
-            }
-            else
-            {
-                ListViewItem item = new ListViewItem(new string[] { _changedOrder.OrderID.ToString(), _changedOrder.ClientName, _changedOrder.SushiList.Count.ToString() });
+                ListViewItem item = new ListViewItem(new string[] { _changedOrder.OrderID.ToString(), _changedOrder.ClientName, _changedOrder.ClientAddress });
                 listView1.Items.Add(item);
-            }
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ListView list = sender as ListView;
-            if (list.SelectedItems.Count > 0)
-            {
-                ListViewItem item = list.SelectedItems[0];
-                Order order = FindById(Convert.ToInt64(item.SubItems[0].Text));
-                if (order != null)
-                {
-                    listView3.Items.Clear();
-                    foreach (Sushi sushi in order.SushiList)
-                    {
-                        listView3.Items.Add(new ListViewItem(new string[] { sushi.Type, sushi.Quantity.ToString() }));
-                    }
-                }
-            }
-        }
-
-        private void listView2_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            ListView list = sender as ListView;
-            if (list.SelectedItems.Count > 0)
-            {
-                ListViewItem item = list.SelectedItems[0];
-                Order order = FindById(Convert.ToInt64(item.SubItems[0].Text));
-                if (order != null)
-                {
-                    listView4.Items.Clear();
-                    foreach (Sushi sushi in order.SushiList)
-                    {
-                        listView4.Items.Add(new ListViewItem(new string[] { sushi.Type, sushi.Quantity.ToString() }));
-                    }
-                }
             }
         }
 
@@ -193,15 +167,18 @@ namespace DeliveryClient
             List<Order> list = _list.GetOrderList();
             foreach (Order order in list)
             {
-                if (order.State == OrderState.WAITING)
+                if (order.State == OrderState.WAITING_DELIVERY)
                 {
-                    ListViewItem item = new ListViewItem(new string[] { order.OrderID.ToString(), order.ClientName, order.SushiList.Count.ToString() });
+                    ListViewItem item = new ListViewItem(new string[] { order.OrderID.ToString(), order.ClientName, order.ClientAddress });
                     listView1.Items.Add(item);
                 }
-                else if (order.State == OrderState.PREPARING)
+                else if (order.State == OrderState.DELIVERING)
                 {
-                    ListViewItem item = new ListViewItem(new string[] { order.OrderID.ToString(), order.ClientName, order.SushiList.Count.ToString() });
-                    listView2.Items.Add(item);
+                    if (order.DeliveryTeam.Equals(_teamName))
+                    {
+                        ListViewItem item = new ListViewItem(new string[] { order.OrderID.ToString(), order.ClientName, order.ClientAddress });
+                        listView2.Items.Add(item);
+                    }
                 }
             }
         }
@@ -212,12 +189,12 @@ namespace DeliveryClient
             _changedOrder = order;
             switch (state)
             {
-                case OrderState.WAITING:
-                    HandleWaiting();
+                case OrderState.WAITING_DELIVERY:
+                    HandleWaitingDelivery();
                     break;
 
-                case OrderState.PREPARING:
-                    HandlePreparing();
+                case OrderState.DELIVERING:
+                    HandleDelivering();
                     break;
 
                 default:

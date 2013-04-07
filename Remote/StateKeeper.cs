@@ -13,11 +13,18 @@ public class StateKeeper
     private static string _stateDirectory;
     private static string _tempBackupFile;
     private object _fileLock = new object();
+    private int _savedDeliveryTeamId;
     private long _savedId;
     private List<Order> _savedList;
 
     public StateKeeper()
     {
+    }
+
+    public int SavedDeliveryTeamId
+    {
+        get { return _savedDeliveryTeamId; }
+        set { _savedDeliveryTeamId = value; }
     }
 
     public long SavedId
@@ -55,6 +62,7 @@ public class StateKeeper
                     StateKeeper keeper = (StateKeeper)bFormatter.Deserialize(fileStream);
                     _savedId = keeper.SavedId;
                     _savedList = keeper.SavedList;
+                    _savedDeliveryTeamId = keeper.SavedDeliveryTeamId;
                 }
             }
         }
@@ -62,6 +70,7 @@ public class StateKeeper
         {
             _savedList = new List<Order>();
             _savedId = 1;
+            _savedDeliveryTeamId = 1;
         }
     }
 

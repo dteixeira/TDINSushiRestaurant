@@ -4,8 +4,8 @@ using System.Linq;
 using System.Runtime.Remoting;
 using System.Xml.Linq;
 
-public class OrderListServer {
-
+public class OrderListServer
+{
     private static readonly string _configFile = @"config/Config.xml";
     private static ChangeEventProxy _eventProxy = null;
     private static OrderListSingleton _list = null;
@@ -90,6 +90,7 @@ public class OrderListServer {
         // Finalizing server and saving current state
         FinalizeServer();
     }
+
     private static void RemoteHandle(OrderState state, Order order)
     {
         // Log payment

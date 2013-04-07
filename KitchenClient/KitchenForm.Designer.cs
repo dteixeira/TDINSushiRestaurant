@@ -197,7 +197,7 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(631, 10);
+            this.button2.Location = new System.Drawing.Point(631, 13);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(141, 23);
             this.button2.TabIndex = 7;
@@ -205,7 +205,7 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // Form1
+            // KitchenForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -218,8 +218,9 @@
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "Form1";
+            this.Name = "KitchenForm";
             this.Text = "Kitchen Client";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.KitchenForm_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 

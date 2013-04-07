@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace DeliveryClient
 {
-    static class Program
+    internal static class Program
     {
         [STAThread]
         private static void Main()

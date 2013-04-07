@@ -9,6 +9,7 @@ namespace DeliveryClient
     {
         private Order _changedOrder = null;
         private OrderState _changedState;
+        private StateChangeEvent _event = null;
         private ChangeEventProxy _eventProxy = null;
         private IOrderList _list = null;
 
@@ -68,7 +69,8 @@ namespace DeliveryClient
             _list = (IOrderList)RemotingServices.Connect(typeof(IOrderList), remote.ObjectUrl);
             _eventProxy = new ChangeEventProxy();
             _eventProxy.StateChangeNotifier += new StateChangeEvent(RemoteHandle);
-            _list.StateChangeNotifier += new StateChangeEvent(_eventProxy.BindEventNotifier);
+            _event = new StateChangeEvent(_eventProxy.BindEventNotifier);
+            _list.StateChangeNotifier += _event;
         }
 
         private Order FindById(long id)
@@ -150,6 +152,11 @@ namespace DeliveryClient
                 ListViewItem item = new ListViewItem(new string[] { _changedOrder.OrderID.ToString(), _changedOrder.ClientName, _changedOrder.SushiList.Count.ToString() });
                 listView1.Items.Add(item);
             }
+        }
+
+        private void KitchenForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            _list.StateChangeNotifier -= _event;
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
