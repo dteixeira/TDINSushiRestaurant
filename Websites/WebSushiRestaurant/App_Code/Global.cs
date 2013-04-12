@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Runtime.Remoting;
+using System.Xml.Linq;
 
 public class Global
 {
@@ -37,5 +38,19 @@ public class Global
             // Connect to remote list object
             _list = (IOrderList)RemotingServices.Connect(typeof(IOrderList), remote.ObjectUrl);
         }
+    }
+
+    public static List<Sushi> LoadMenu(string path)
+    {
+        XDocument menu = XDocument.Load(path);
+        List<Sushi> itemList = new List<Sushi>();
+        foreach (XElement elem in menu.Descendants("item"))
+        {
+            string itemName = elem.Descendants("name").First().Value;
+            double price = double.Parse(elem.Descendants("price").First().Value);
+            Sushi newItem = new Sushi(itemName, price);
+            itemList.Add(newItem);
+        }
+        return itemList;
     }
 }

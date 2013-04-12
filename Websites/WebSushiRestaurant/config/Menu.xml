@@ -1,0 +1,10 @@
+<menu>
+	<item>
+		<name>Sashimi</name>
+		<price>2.6</price>
+	</item>
+	<item>
+		<name>Wasabi</name>
+		<price>3.99</price>
+	</item>
+</menu>

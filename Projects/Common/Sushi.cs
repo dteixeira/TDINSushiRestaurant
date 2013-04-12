@@ -14,6 +14,13 @@ public class Sushi
         _quantity = 0;
     }
 
+    public Sushi(string type, double price, int quantity)
+    {
+        _type = type;
+        _price = price;
+        _quantity = quantity;
+    }
+
     public double Price
     {
         get { return _price; }
