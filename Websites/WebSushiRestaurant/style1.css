@@ -1,0 +1,106 @@
+﻿body {
+}
+
+div#content {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #0084ff;
+    font-family: sans-serif;
+    color: white;
+    font-weight: bolder;
+    padding: 10px;
+}
+
+th {
+    font-size: 1.2em;
+    width: 200px;
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+table {
+    width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 30px;
+}
+
+td {
+    border-left: solid 1px white;
+    border-right: solid 1px white;
+    width: 200px;
+    text-align: center;
+}
+
+    td input {
+        width: 150px;
+    }
+
+p span {
+    width: 600px;
+    display: inline-block;
+    padding-left: 50px;
+}
+
+p input {
+    width: 500px;
+    margin-left: 50px;
+}
+
+.button {
+    border: solid 3px white;
+    color: white;
+    background-color: #0084ff;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bolder;
+    text-decoration: none;
+    cursor: default;
+}
+
+    .button:hover {
+        background-color: #0085B7;
+    }
+
+input.button {
+    margin: 0px;
+}
+
+    input.button.first {
+        margin-left: 175px;
+        margin-right: 10px;
+    }
+
+h1 {
+    font-family: sans-serif;
+    color: #0084ff;
+    text-align: center;
+    width: 100%;
+}
+
+.spanFormat {
+    text-align: left;
+    display: inline;
+    min-width: 10px;
+    padding-right: 10px;
+}
+
+span#Information {
+    display: block;
+    padding-top: 10px;
+    text-align: center;
+    font-size: 1.4em;
+    padding-bottom: 20px;
+}
+
+span.info {
+    font-size: 1.5em;
+}
+
+span#bad {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    font-size: 1.4em;
+}

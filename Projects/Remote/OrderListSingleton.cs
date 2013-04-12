@@ -17,24 +17,18 @@ public class OrderListSingleton : MarshalByRefObject, IOrderList
         _orderList = new List<Order>();
         _deliveryTeamId = 1;
         _teamList = new List<string>();
-
-        // TODO REMOVE
-        Order order = new Order();
-        order.ClientAddress = "Something Street, 333, Somewhere";
-        order.ClientCC = "123456123456";
-        order.ClientName = "John Doe";
-        order.State = OrderState.WAITING;
-        order.OrderID = 1;
-        Sushi sushi = new Sushi("Sashimi", 5.0);
-        sushi.Quantity = 5;
-        order.SushiList.Add(sushi);
-        sushi = new Sushi("Fugu", 25.0);
-        sushi.Quantity = 1;
-        order.SushiList.Add(sushi);
-        _orderList.Add(order);
     }
 
     public event StateChangeEvent StateChangeNotifier;
+
+    public void AddOrder(Order order)
+    {
+        order.DeliveryTeam = "";
+        order.OrderID = _orderId++;
+        order.State = OrderState.WAITING;
+        _orderList.Add(order);
+        NotifyClients(OrderState.WAITING, order);
+    }
 
     public void ChangeOrderState(long id, OrderState state)
     {
