@@ -1,10 +1,58 @@
 <menu>
 	<item>
-		<name>Sashimi</name>
-		<price>2.6</price>
+		<name>Maguro</name>
+		<price>3.95</price>
 	</item>
 	<item>
-		<name>Wasabi</name>
+		<name>Sake</name>
 		<price>3.99</price>
+	</item>
+	<item>
+		<name>Ebi</name>
+		<price>3.49</price>
+	</item>
+	<item>
+		<name>Masago</name>
+		<price>2.99</price>
+	</item>
+	<item>
+		<name>Ikura</name>
+		<price>4.95</price>
+	</item>
+	<item>
+		<name>Kani</name>
+		<price>3.25</price>
+	</item>
+	<item>
+		<name>Wasabi Tobiko</name>
+		<price>3.95</price>
+	</item>
+	<item>
+		<name>Ika</name>
+		<price>5.29</price>
+	</item>
+	<item>
+		<name>Hamachi</name>
+		<price>5</price>
+	</item>
+	<item>
+		<name>Hokkigai</name>
+		<price>4.95</price>
+	</item>
+	<item>
+		<name>Tako</name>
+		<price>3.99</price>
+	</item>
+	<item>
+		<name>Inari</name>
+		<price>3.25</price>
+	</item>
+	<item>
+		<name>Saba</name>
+		<price>3.99</price>
+	</item>
+	<item>
+		<name>Tobitama</name>
+		<price>6.35</price>
 	</item>
 </menu>
